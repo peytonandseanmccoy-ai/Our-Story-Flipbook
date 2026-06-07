@@ -367,6 +367,9 @@ function preloadImages(urls) {
 }
 
 window.addEventListener("load", async () => {
+  // Small delay to ensure DOM and library are fully ready
+  await new Promise(resolve => setTimeout(resolve, 100));
+
   const imageUrls = [
     "https://cdn.prod.website-files.com/6a079bfcecd89ea8da3e7987/6a215c30d5d9457c0ef906f6_Our%20Story.png",
     "https://cdn.prod.website-files.com/6a079bfcecd89ea8da3e7987/6a216048502622b9a2e29f02_2.png",
