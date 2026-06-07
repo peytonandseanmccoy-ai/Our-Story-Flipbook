@@ -16,10 +16,10 @@
 
 body {
   margin: 0;
-  min-height: 100vh;
+  height: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   overflow: hidden;
   background:
     linear-gradient(rgba(20,20,20,0.15), rgba(20,20,20,0.15)),
@@ -30,18 +30,22 @@ body {
   position: relative;
 }
 
+html {
+  height: 100%;
+}
+
 /* Exact visible book rectangle */
 .book-clip {
-  width: min(1000px, 100vw);
-  height: min(700px, 70vw);
+  width: 100%;
+  height: auto;
   overflow: hidden;
   position: relative;
   background: transparent;
 }
 
 #book {
-  width: min(1000px, 100vw);
-  height: min(700px, 70vw);
+  width: 100%;
+  height: auto;
   background: transparent;
   position: relative;
   z-index: 1;
@@ -393,9 +397,13 @@ window.addEventListener("load", async () => {
   await preloadImages(imageUrls);
 
   const bookEl = document.getElementById("book");
-  const vw = Math.min(window.innerWidth, 1000);
-  const bookW = Math.round(vw / 2);
+  const containerW = document.getElementById("book-clip").offsetWidth;
+  const bookW = Math.round(containerW / 2);
   const bookH = Math.round(bookW * 1.4);
+
+  bookEl.style.width = containerW + "px";
+  bookEl.style.height = bookH + "px";
+  document.getElementById("book-clip").style.height = bookH + "px";
 
   const pageFlip = new St.PageFlip(
     bookEl,
@@ -404,9 +412,9 @@ window.addEventListener("load", async () => {
       height: bookH,
       size: "fixed",
       minWidth: 280,
-      maxWidth: 600,
+      maxWidth: 700,
       minHeight: 390,
-      maxHeight: 840,
+      maxHeight: 980,
       showCover: true,
       drawShadow: true,
       flippingTime: 900,
