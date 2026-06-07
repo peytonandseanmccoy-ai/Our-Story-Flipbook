@@ -498,7 +498,7 @@ window.addEventListener("load", async () => {
     bookClip.classList.add("is-ready");
   });
 
-  // Fallback in case init event doesn't fire on some mobile browsers
+  // Fallback in case init event doesn't fire
   setTimeout(() => {
     if (bookClip.classList.contains("is-loading")) {
       setBookState();
@@ -506,6 +506,15 @@ window.addEventListener("load", async () => {
       bookClip.classList.add("is-ready");
     }
   }, 800);
+
+  // Reinitialize on resize (e.g. Webflow breakpoint switching in designer)
+  let resizeTimer;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      window.location.reload();
+    }, 400);
+  });
 });
 </script>
 
