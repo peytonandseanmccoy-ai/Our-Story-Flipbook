@@ -188,7 +188,7 @@ body {
 
 /* Buttons */
 .book-controls {
-  position: fixed;
+  position: absolute;
   bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
@@ -243,6 +243,7 @@ body.book-back-closed .stf__item.--hard {
 @media(max-width: 900px) {
   body {
     overflow: auto;
+    position: relative;
     padding: 20px 0;
   }
 
