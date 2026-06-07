@@ -394,21 +394,35 @@ window.addEventListener("load", async () => {
 
   await preloadImages(imageUrls);
 
-  // On tablet/mobile, scale the book to fill the screen width fully
-  const isMobile = window.innerWidth <= 1050;
-  const bookWidth = isMobile ? Math.round(window.innerWidth / 2) : 500;
-  const bookHeight = isMobile ? Math.round(bookWidth * 1.4) : 700;
+  const vw = window.innerWidth;
+  const isPhone = vw <= 480;
+  const isTablet = vw > 480 && vw <= 1050;
+  const isMobile = vw <= 1050;
+
+  let bookWidth, bookHeight;
+
+  if (isPhone) {
+    // Phone: show single page portrait mode
+    bookWidth = Math.round(vw * 0.92);
+    bookHeight = Math.round(bookWidth * 1.4);
+  } else if (isTablet) {
+    // Tablet: full landscape spread
+    bookWidth = Math.round(vw / 2);
+    bookHeight = Math.round(bookWidth * 1.4);
+  } else {
+    bookWidth = 500;
+    bookHeight = 700;
+  }
 
   if (isMobile) {
     const clip = document.getElementById("book-clip");
     const bookEl = document.getElementById("book");
-    const totalW = bookWidth * 2;
+    const totalW = isPhone ? bookWidth : bookWidth * 2;
     const totalH = bookHeight;
     clip.style.width = totalW + "px";
     clip.style.height = totalH + "px";
     bookEl.style.width = totalW + "px";
     bookEl.style.height = totalH + "px";
-    // Also update the controls position
     document.querySelector(".book-controls").style.bottom = "10px";
   }
 
@@ -425,7 +439,7 @@ window.addEventListener("load", async () => {
       showCover: true,
       drawShadow: true,
       flippingTime: 900,
-      usePortrait: false,
+      usePortrait: isPhone,
       startPage: 0,
       autoSize: false,
       mobileScrollSupport: false,
