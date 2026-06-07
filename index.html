@@ -396,22 +396,22 @@ window.addEventListener("load", async () => {
 
   const vw = window.innerWidth;
   const vh = window.innerHeight;
-  const isPhone = Math.min(vw, vh) <= 480; // true phone regardless of orientation
+  const isPhone = Math.min(vw, vh) <= 480;
   const isLandscapePhone = isPhone && vw > vh;
   const isMobile = vw <= 1050;
 
   let bookWidth, bookHeight;
 
   if (isLandscapePhone) {
-    // Phone landscape: fit within viewport height
-    bookHeight = Math.round(vh * 0.80);
+    // Phone landscape: size by height, leave room for buttons
+    bookHeight = Math.round(vh * 0.72);
     bookWidth = Math.round(bookHeight / 1.4);
   } else if (isPhone) {
     // Phone portrait: single page full width
     bookWidth = Math.round(vw * 0.92);
     bookHeight = Math.round(bookWidth * 1.4);
   } else if (isMobile) {
-    // Tablet: full landscape spread
+    // Tablet landscape spread
     bookWidth = Math.round(vw / 2);
     bookHeight = Math.round(bookWidth * 1.4);
   } else {
@@ -422,13 +422,26 @@ window.addEventListener("load", async () => {
   if (isMobile) {
     const clip = document.getElementById("book-clip");
     const bookEl = document.getElementById("book");
-    const totalW = isPhone ? (isLandscapePhone ? bookWidth * 2 : bookWidth) : bookWidth * 2;
+    const totalW = isLandscapePhone ? bookWidth * 2 : isPhone ? bookWidth : bookWidth * 2;
     const totalH = bookHeight;
     clip.style.width = totalW + "px";
     clip.style.height = totalH + "px";
     bookEl.style.width = totalW + "px";
     bookEl.style.height = totalH + "px";
-    document.querySelector(".book-controls").style.bottom = "10px";
+
+    // Scale down text on phone landscape
+    if (isLandscapePhone) {
+      document.querySelectorAll(".text-page h2").forEach(el => el.style.fontSize = "26px");
+      document.querySelectorAll(".text-page p").forEach(el => el.style.fontSize = "13px");
+      document.querySelectorAll(".text-page").forEach(el => el.style.padding = "20px");
+    }
+
+    // Position buttons below the book, not overlapping
+    const controls = document.querySelector(".book-controls");
+    controls.style.position = "absolute";
+    controls.style.bottom = "8px";
+    controls.style.left = "50%";
+    controls.style.transform = "translateX(-50%)";
   }
 
   const pageFlip = new St.PageFlip(
