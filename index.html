@@ -239,16 +239,18 @@ body.book-back-closed .stf__item.--hard {
   visibility: visible !important;
 }
 
-@media(max-width: 900px) {
+@media(max-width: 1050px) {
   body {
-    overflow: auto;
-    padding: 20px 0;
+    overflow: hidden;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
   }
 
   .book-clip,
   #book {
     width: 95vw;
-    height: 75vh;
+    height: calc(95vw * 0.7);
   }
 
   .image-page {
@@ -392,16 +394,32 @@ window.addEventListener("load", async () => {
 
   await preloadImages(imageUrls);
 
+  // On tablet/mobile, scale the book to fit the screen width
+  const isMobile = window.innerWidth <= 1050;
+  const bookWidth = isMobile ? Math.round(window.innerWidth * 0.95 / 2) : 500;
+  const bookHeight = isMobile ? Math.round(bookWidth * 1.4) : 700;
+
+  if (isMobile) {
+    const clip = document.getElementById("book-clip");
+    const bookEl = document.getElementById("book");
+    const totalW = bookWidth * 2;
+    const totalH = bookHeight;
+    clip.style.width = totalW + "px";
+    clip.style.height = totalH + "px";
+    bookEl.style.width = totalW + "px";
+    bookEl.style.height = totalH + "px";
+  }
+
   const pageFlip = new St.PageFlip(
     document.getElementById("book"),
     {
-      width: 500,
-      height: 700,
+      width: bookWidth,
+      height: bookHeight,
       size: "fixed",
-      minWidth: 315,
-      maxWidth: 1200,
-      minHeight: 420,
-      maxHeight: 1600,
+      minWidth: 160,
+      maxWidth: 600,
+      minHeight: 220,
+      maxHeight: 840,
       showCover: true,
       drawShadow: true,
       flippingTime: 900,
