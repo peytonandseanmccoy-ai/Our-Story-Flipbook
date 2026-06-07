@@ -380,51 +380,28 @@ window.addEventListener("load", async () => {
 
   const vw = window.innerWidth;
   const vh = window.innerHeight;
-  const isPhone = Math.min(vw, vh) <= 480;
-  const isLandscapePhone = isPhone && vw > vh;
   const isMobile = vw <= 1050;
 
-  let bookWidth, bookHeight;
-
-  if (isLandscapePhone) {
-    // Phone landscape: each page = half total width, constrained by both vw and vh
-    const maxByWidth = Math.round(vw / 2) - 2;
-    const maxByHeight = Math.round(vh * 0.72 / 1.4);
-    bookWidth = Math.min(maxByWidth, maxByHeight);
-    bookHeight = Math.round(bookWidth * 1.4);
-  } else if (isPhone) {
-    // Phone portrait: fit within viewport height leaving room for buttons and nav
-    const maxByHeight = Math.round((vh - 120) / 1.4);
-    const maxByWidth = Math.round(vw * 0.88);
-    bookWidth = Math.min(maxByWidth, maxByHeight);
-    bookHeight = Math.round(bookWidth * 1.4);
-  } else if (isMobile) {
-    // Tablet landscape spread
-    bookWidth = Math.round(vw / 2);
-    bookHeight = Math.round(bookWidth * 1.4);
-  } else {
-    bookWidth = 500;
-    bookHeight = 700;
-  }
+  let bookWidth = 500;
+  let bookHeight = 700;
 
   if (isMobile) {
+    // Always landscape spread on mobile — size to fit screen
+    bookWidth = Math.floor(Math.min(vw, vh * 1.43) / 2) - 2;
+    bookHeight = Math.floor(bookWidth * 1.4);
+
     const clip = document.getElementById("book-clip");
     const bookEl = document.getElementById("book");
-    // portrait phone: one page wide; landscape phone + tablet: two pages wide
-    const totalW = (isPhone && !isLandscapePhone) ? bookWidth : bookWidth * 2;
-    const totalH = bookHeight;
-    clip.style.width = totalW + "px";
-    clip.style.height = totalH + "px";
-    bookEl.style.width = totalW + "px";
-    bookEl.style.height = totalH + "px";
+    clip.style.width = (bookWidth * 2) + "px";
+    clip.style.height = bookHeight + "px";
+    bookEl.style.width = (bookWidth * 2) + "px";
+    bookEl.style.height = bookHeight + "px";
 
-    // Scale down text on small screens
-    const smallText = isLandscapePhone || isPhone;
-    if (smallText) {
-      document.querySelectorAll(".text-page h2").forEach(el => el.style.fontSize = isLandscapePhone ? "22px" : "32px");
-      document.querySelectorAll(".text-page p").forEach(el => el.style.fontSize = isLandscapePhone ? "12px" : "15px");
-      document.querySelectorAll(".text-page").forEach(el => el.style.padding = isLandscapePhone ? "16px" : "28px");
-    }
+    // Scale text proportionally
+    const scale = bookWidth / 500;
+    document.querySelectorAll(".text-page h2").forEach(el => el.style.fontSize = Math.max(18, Math.round(62 * scale)) + "px");
+    document.querySelectorAll(".text-page p").forEach(el => el.style.fontSize = Math.max(12, Math.round(23 * scale)) + "px");
+    document.querySelectorAll(".text-page").forEach(el => el.style.padding = Math.max(16, Math.round(90 * scale)) + "px");
   }
 
   const pageFlip = new St.PageFlip(
@@ -440,7 +417,7 @@ window.addEventListener("load", async () => {
       showCover: true,
       drawShadow: true,
       flippingTime: 900,
-      usePortrait: isPhone && !isLandscapePhone,
+      usePortrait: false,
       startPage: 0,
       autoSize: false,
       mobileScrollSupport: false,
