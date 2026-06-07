@@ -409,8 +409,10 @@ window.addEventListener("load", async () => {
     bookWidth = Math.min(maxByWidth, maxByHeight);
     bookHeight = Math.round(bookWidth * 1.4);
   } else if (isPhone) {
-    // Phone portrait: single page full width
-    bookWidth = Math.round(vw * 0.92);
+    // Phone portrait: fit within viewport height leaving room for buttons and nav
+    const maxByHeight = Math.round((vh - 120) / 1.4);
+    const maxByWidth = Math.round(vw * 0.88);
+    bookWidth = Math.min(maxByWidth, maxByHeight);
     bookHeight = Math.round(bookWidth * 1.4);
   } else if (isMobile) {
     // Tablet landscape spread
