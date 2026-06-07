@@ -403,9 +403,11 @@ window.addEventListener("load", async () => {
   let bookWidth, bookHeight;
 
   if (isLandscapePhone) {
-    // Phone landscape: size by height, leave room for buttons
-    bookHeight = Math.round(vh * 0.72);
-    bookWidth = Math.round(bookHeight / 1.4);
+    // Phone landscape: each page = half total width, constrained by both vw and vh
+    const maxByWidth = Math.round(vw / 2) - 2;
+    const maxByHeight = Math.round(vh * 0.72 / 1.4);
+    bookWidth = Math.min(maxByWidth, maxByHeight);
+    bookHeight = Math.round(bookWidth * 1.4);
   } else if (isPhone) {
     // Phone portrait: single page full width
     bookWidth = Math.round(vw * 0.92);
