@@ -412,10 +412,15 @@ window.addEventListener("load", async () => {
     document.querySelectorAll(".text-page").forEach(el => el.style.padding = Math.max(24, Math.round(90 * scale)) + "px");
 
   } else if (isMobile) {
-    // Tablet: landscape spread
+    // Tablet: landscape spread, must fit within vw
     portrait = false;
-    bookWidth = Math.floor(Math.min(vw * 0.5, (vh - 80) / 1.4));
+    bookWidth = Math.floor((vw * 0.98) / 2);
     bookHeight = Math.floor(bookWidth * 1.4);
+    // Also constrain by height
+    if (bookHeight > vh - 80) {
+      bookHeight = vh - 80;
+      bookWidth = Math.floor(bookHeight / 1.4);
+    }
     clip.style.width = (bookWidth * 2) + "px";
     clip.style.height = bookHeight + "px";
     bookEl.style.width = (bookWidth * 2) + "px";
