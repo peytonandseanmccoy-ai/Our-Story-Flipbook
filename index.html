@@ -394,9 +394,9 @@ window.addEventListener("load", async () => {
 
   await preloadImages(imageUrls);
 
-  // On tablet/mobile, scale the book to fit the screen width
+  // On tablet/mobile, scale the book to fill the screen width fully
   const isMobile = window.innerWidth <= 1050;
-  const bookWidth = isMobile ? Math.round(window.innerWidth * 0.95 / 2) : 500;
+  const bookWidth = isMobile ? Math.round(window.innerWidth / 2) : 500;
   const bookHeight = isMobile ? Math.round(bookWidth * 1.4) : 700;
 
   if (isMobile) {
@@ -408,6 +408,8 @@ window.addEventListener("load", async () => {
     clip.style.height = totalH + "px";
     bookEl.style.width = totalW + "px";
     bookEl.style.height = totalH + "px";
+    // Also update the controls position
+    document.querySelector(".book-controls").style.bottom = "10px";
   }
 
   const pageFlip = new St.PageFlip(
