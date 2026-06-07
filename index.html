@@ -395,17 +395,22 @@ window.addEventListener("load", async () => {
   await preloadImages(imageUrls);
 
   const vw = window.innerWidth;
-  const isPhone = vw <= 480;
-  const isTablet = vw > 480 && vw <= 1050;
+  const vh = window.innerHeight;
+  const isPhone = Math.min(vw, vh) <= 480; // true phone regardless of orientation
+  const isLandscapePhone = isPhone && vw > vh;
   const isMobile = vw <= 1050;
 
   let bookWidth, bookHeight;
 
-  if (isPhone) {
-    // Phone: show single page portrait mode
+  if (isLandscapePhone) {
+    // Phone landscape: fit within viewport height
+    bookHeight = Math.round(vh * 0.80);
+    bookWidth = Math.round(bookHeight / 1.4);
+  } else if (isPhone) {
+    // Phone portrait: single page full width
     bookWidth = Math.round(vw * 0.92);
     bookHeight = Math.round(bookWidth * 1.4);
-  } else if (isTablet) {
+  } else if (isMobile) {
     // Tablet: full landscape spread
     bookWidth = Math.round(vw / 2);
     bookHeight = Math.round(bookWidth * 1.4);
@@ -417,7 +422,7 @@ window.addEventListener("load", async () => {
   if (isMobile) {
     const clip = document.getElementById("book-clip");
     const bookEl = document.getElementById("book");
-    const totalW = isPhone ? bookWidth : bookWidth * 2;
+    const totalW = isPhone ? (isLandscapePhone ? bookWidth * 2 : bookWidth) : bookWidth * 2;
     const totalH = bookHeight;
     clip.style.width = totalW + "px";
     clip.style.height = totalH + "px";
@@ -439,7 +444,7 @@ window.addEventListener("load", async () => {
       showCover: true,
       drawShadow: true,
       flippingTime: 900,
-      usePortrait: isPhone,
+      usePortrait: isPhone && !isLandscapePhone,
       startPage: 0,
       autoSize: false,
       mobileScrollSupport: false,
