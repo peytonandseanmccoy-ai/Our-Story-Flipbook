@@ -14,14 +14,18 @@
 <style>
 * { box-sizing: border-box; }
 
-html, body {
+html {
   margin: 0;
   padding: 0;
   width: 100%;
-  min-height: 100vh;
+  height: 100%;
 }
 
 body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -31,7 +35,6 @@ body {
     url("https://cdn.prod.website-files.com/6a079bfcecd89ea8da3e7987/6a2157adfe022a2baedcce7a_Untitled%20design%20(1).png");
   background-size: cover;
   background-position: center;
-  background-attachment: fixed;
   font-family: "Cormorant Garamond", serif;
   position: relative;
 }
@@ -246,19 +249,6 @@ body.book-back-closed .stf__item.--hard {
 }
 
 @media(max-width: 1050px) {
-  body {
-    overflow: hidden;
-    padding: 0;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .book-clip,
-  #book {
-    width: 95vw;
-    height: calc(95vw * 0.7);
-  }
-
   .image-page {
     padding: 28px;
   }
@@ -266,18 +256,6 @@ body.book-back-closed .stf__item.--hard {
   .image-page img {
     width: 90%;
     height: 90%;
-  }
-
-  .text-page {
-    padding: 35px;
-  }
-
-  .text-page h2 {
-    font-size: 42px;
-  }
-
-  .text-page p {
-    font-size: 18px;
   }
 }
 </style>
@@ -432,26 +410,21 @@ window.addEventListener("load", async () => {
   if (isMobile) {
     const clip = document.getElementById("book-clip");
     const bookEl = document.getElementById("book");
-    const totalW = isLandscapePhone ? bookWidth * 2 : isPhone ? bookWidth : bookWidth * 2;
+    // portrait phone: one page wide; landscape phone + tablet: two pages wide
+    const totalW = (isPhone && !isLandscapePhone) ? bookWidth : bookWidth * 2;
     const totalH = bookHeight;
     clip.style.width = totalW + "px";
     clip.style.height = totalH + "px";
     bookEl.style.width = totalW + "px";
     bookEl.style.height = totalH + "px";
 
-    // Scale down text on phone landscape
-    if (isLandscapePhone) {
-      document.querySelectorAll(".text-page h2").forEach(el => el.style.fontSize = "26px");
-      document.querySelectorAll(".text-page p").forEach(el => el.style.fontSize = "13px");
-      document.querySelectorAll(".text-page").forEach(el => el.style.padding = "20px");
+    // Scale down text on small screens
+    const smallText = isLandscapePhone || isPhone;
+    if (smallText) {
+      document.querySelectorAll(".text-page h2").forEach(el => el.style.fontSize = isLandscapePhone ? "22px" : "32px");
+      document.querySelectorAll(".text-page p").forEach(el => el.style.fontSize = isLandscapePhone ? "12px" : "15px");
+      document.querySelectorAll(".text-page").forEach(el => el.style.padding = isLandscapePhone ? "16px" : "28px");
     }
-
-    // Position buttons below the book, not overlapping
-    const controls = document.querySelector(".book-controls");
-    controls.style.position = "absolute";
-    controls.style.bottom = "8px";
-    controls.style.left = "50%";
-    controls.style.transform = "translateX(-50%)";
   }
 
   const pageFlip = new St.PageFlip(
