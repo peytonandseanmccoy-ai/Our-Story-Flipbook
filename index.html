@@ -475,6 +475,9 @@ window.addEventListener("load", async () => {
     const currentPage = pageFlip.getCurrentPageIndex();
     const totalPages = pageFlip.getPageCount();
 
+    // Don't hide buttons if page count hasn't loaded yet
+    if (totalPages === 0) return;
+
     document.body.classList.toggle("book-front-closed", currentPage <= 0);
     document.body.classList.toggle("book-back-closed", currentPage >= totalPages - 1);
 
@@ -497,10 +500,21 @@ window.addEventListener("load", async () => {
     }
   });
 
-  setBookState();
+  // Wait for pageFlip to fully initialise before setting button state
+  pageFlip.on("init", () => {
+    setBookState();
+    bookClip.classList.remove("is-loading");
+    bookClip.classList.add("is-ready");
+  });
 
-  bookClip.classList.remove("is-loading");
-  bookClip.classList.add("is-ready");
+  // Fallback in case init event doesn't fire on some mobile browsers
+  setTimeout(() => {
+    if (bookClip.classList.contains("is-loading")) {
+      setBookState();
+      bookClip.classList.remove("is-loading");
+      bookClip.classList.add("is-ready");
+    }
+  }, 800);
 });
 </script>
 
