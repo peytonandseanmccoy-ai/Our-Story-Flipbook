@@ -380,28 +380,51 @@ window.addEventListener("load", async () => {
 
   const vw = window.innerWidth;
   const vh = window.innerHeight;
+  const isPhone = vw <= 520;
   const isMobile = vw <= 1050;
 
   let bookWidth = 500;
   let bookHeight = 700;
+  let portrait = false;
 
-  if (isMobile) {
-    // Always landscape spread on mobile — size to fit screen
-    bookWidth = Math.floor(Math.min(vw, vh * 1.43) / 2) - 2;
+  const clip = document.getElementById("book-clip");
+  const bookEl = document.getElementById("book");
+
+  if (isPhone) {
+    // Phone: portrait mode, one page at a time, full width
+    portrait = true;
+    bookWidth = Math.floor(vw * 0.92);
     bookHeight = Math.floor(bookWidth * 1.4);
+    // Constrain by height too so buttons are visible
+    if (bookHeight > vh - 100) {
+      bookHeight = vh - 100;
+      bookWidth = Math.floor(bookHeight / 1.4);
+    }
+    clip.style.width = bookWidth + "px";
+    clip.style.height = bookHeight + "px";
+    bookEl.style.width = bookWidth + "px";
+    bookEl.style.height = bookHeight + "px";
 
-    const clip = document.getElementById("book-clip");
-    const bookEl = document.getElementById("book");
+    // Scale text proportionally
+    const scale = bookWidth / 500;
+    document.querySelectorAll(".text-page h2").forEach(el => el.style.fontSize = Math.max(24, Math.round(62 * scale)) + "px");
+    document.querySelectorAll(".text-page p").forEach(el => el.style.fontSize = Math.max(14, Math.round(23 * scale)) + "px");
+    document.querySelectorAll(".text-page").forEach(el => el.style.padding = Math.max(24, Math.round(90 * scale)) + "px");
+
+  } else if (isMobile) {
+    // Tablet: landscape spread
+    portrait = false;
+    bookWidth = Math.floor(Math.min(vw * 0.5, (vh - 80) / 1.4));
+    bookHeight = Math.floor(bookWidth * 1.4);
     clip.style.width = (bookWidth * 2) + "px";
     clip.style.height = bookHeight + "px";
     bookEl.style.width = (bookWidth * 2) + "px";
     bookEl.style.height = bookHeight + "px";
 
-    // Scale text proportionally
     const scale = bookWidth / 500;
-    document.querySelectorAll(".text-page h2").forEach(el => el.style.fontSize = Math.max(18, Math.round(62 * scale)) + "px");
-    document.querySelectorAll(".text-page p").forEach(el => el.style.fontSize = Math.max(12, Math.round(23 * scale)) + "px");
-    document.querySelectorAll(".text-page").forEach(el => el.style.padding = Math.max(16, Math.round(90 * scale)) + "px");
+    document.querySelectorAll(".text-page h2").forEach(el => el.style.fontSize = Math.max(20, Math.round(62 * scale)) + "px");
+    document.querySelectorAll(".text-page p").forEach(el => el.style.fontSize = Math.max(13, Math.round(23 * scale)) + "px");
+    document.querySelectorAll(".text-page").forEach(el => el.style.padding = Math.max(20, Math.round(90 * scale)) + "px");
   }
 
   const pageFlip = new St.PageFlip(
@@ -417,7 +440,7 @@ window.addEventListener("load", async () => {
       showCover: true,
       drawShadow: true,
       flippingTime: 900,
-      usePortrait: false,
+      usePortrait: portrait,
       startPage: 0,
       autoSize: false,
       mobileScrollSupport: false,
